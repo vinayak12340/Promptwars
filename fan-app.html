@@ -15,8 +15,12 @@
         </div>
 
         <nav class="app-header">
-            <div class="user-greeting">Hi, Jamie 👋</div>
-            <div class="seat-info">Sect 114 • Row H • Seat 12</div>
+            <div>
+                <div class="user-greeting">Hi, Jamie 👋</div>
+                <div class="seat-info">Sect 114 • Row H • Seat 12</div>
+                <div id="userLocation" style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">📍 Locating GPS...</div>
+            </div>
+            <button class="theme-toggle" onclick="document.body.classList.toggle('light-theme')">🌓 Theme</button>
         </nav>
 
         <!-- Notification Banner Container -->
@@ -81,6 +85,11 @@
                         <span class="icon">🧀</span>
                         <div>Loaded Nachos</div>
                         <span class="price">$10</span>
+                    </div>
+                    <div class="menu-item" onclick="placeOrder('Team Jersey', 85, 2)">
+                        <span class="icon">👕</span>
+                        <div>Team Jersey</div>
+                        <span class="price">$85</span>
                     </div>
                 </div>
                 

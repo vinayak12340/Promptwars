@@ -99,3 +99,14 @@ function placeOrder(item, price, baseWaitMins) {
         }
     }, 4000); // Ticks every 4 seconds for demo speed
 }
+
+// Geolocation Tracker
+if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition((position) => {
+        document.getElementById('userLocation').innerText = `📍 GPS: ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`;
+    }, (error) => {
+        document.getElementById('userLocation').innerText = `📍 GPS: Permission Denied`;
+    });
+} else {
+    document.getElementById('userLocation').innerText = `📍 GPS: Not Supported`;
+}
