@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Operations Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="logo">NEXUS<span>OPS</span></div>
+            <nav class="side-nav">
+                <a href="#" class="active">Overview</a>
+                <a href="#">Crowd Control</a>
+                <a href="#">Concessions</a>
+                <a href="#">Security</a>
+            </nav>
+            <div class="status-indicator">
+                <div class="dot green"></div> System Nominal
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <h2>Live Operations Center</h2>
+                <div class="time-display" id="clock">00:00:00</div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Heat Map Panel -->
+                <div class="panel heatmap-panel glass-panel">
+                    <div class="panel-header">
+                        <h3>Sector Heat Map</h3>
+                        <span class="badge live">LIVE</span>
+                    </div>
+                    <div class="canvas-container" style="position: relative;">
+                        <!-- Embed Google Maps -->
+                        <iframe src="https://maps.google.com/maps?q=Wembley%20Stadium&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" frameborder="0" style="border:0; filter: invert(90%) hue-rotate(180deg);" allowfullscreen></iframe>
+                        <!-- Canvas overlay for ML Hotspots -->
+                        <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 10;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Dispatch Alerts Panel -->
+                <div class="panel dispatch-panel glass-panel">
+                    <div class="panel-header">
+                        <h3>Global Fan Dispatch</h3>
+                    </div>
+                    <div class="dispatch-form">
+                        <label>Select Notification Type</label>
+                        <select id="alertType">
+                            <option value="info">Info - Event Update</option>
+                            <option value="concession">Promo - Concessions</option>
+                            <option value="emergency">Emergency - Reroute Traffic</option>
+                        </select>
+                        <textarea id="alertMessage" placeholder="Enter message to broadcast to all Fan Apps..."></textarea>
+                        <button id="dispatchBtn" class="cta-btn dispatch-btn">Broadcast to Fans</button>
+                    </div>
+                    <div id="dispatchStatus" class="status-msg"></div>
+                </div>
+
+                <!-- Concessions Predictive Logic -->
+                <div class="panel chart-panel glass-panel">
+                    <div class="panel-header">
+                        <h3>Predictive Queueing Load</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="queueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Incoming Fan Orders -->
+                <div class="panel orders-panel glass-panel">
+                    <div class="panel-header">
+                        <h3>Live Fan Activity</h3>
+                    </div>
+                    <div class="activity-feed" id="activityFeed">
+                        <!-- Feed items inserted via JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="dashboard.js"></script>
+</body>
+</html>

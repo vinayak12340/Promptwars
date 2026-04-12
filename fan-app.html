@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Fan App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="fan.css">
+</head>
+<body>
+    <div class="mobile-frame">
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="icons">📶 🔋</div>
+        </div>
+
+        <nav class="app-header">
+            <div class="user-greeting">Hi, Jamie 👋</div>
+            <div class="seat-info">Sect 114 • Row H • Seat 12</div>
+        </nav>
+
+        <!-- Notification Banner Container -->
+        <div id="notificationBanner" class="notification-banner hidden"></div>
+
+        <!-- EMERGENCY MAP OVERLAY -->
+        <div id="emergencyOverlay" class="emergency-overlay hidden">
+            <h2>🚨 EVACUATION ROUTE 🚨</h2>
+            <p>Please proceed to EXIT 4 immediately.</p>
+            <div class="emergency-map"></div>
+        </div>
+
+        <main class="app-content">
+            
+            <!-- Washrooms Tracker -->
+            <section class="washroom-section">
+                <h3>Facilities Status</h3>
+                <div class="washroom-grid">
+                    <div class="washroom-card" onclick="pingWashroom()">
+                        <div class="icon">🚻</div>
+                        <div class="details">
+                            <strong>North Concourse</strong>
+                            <p class="wait-time short">Wait: 1 min</p>
+                        </div>
+                    </div>
+                    <div class="washroom-card" onclick="pingWashroom()">
+                        <div class="icon">🚻</div>
+                        <div class="details">
+                            <strong>South Concourse</strong>
+                            <p class="wait-time long">Wait: 9 min</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AR Wayfinding Simulation -->
+            <section class="ar-section">
+                <div class="ar-container">
+                    <div class="ar-overlay">
+                        <h3>AR Wayfinding</h3>
+                        <p>Follow digital arrows to your seat.</p>
+                        <button class="cta-btn sm">Start Navigation</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Zero Wait Commerce -->
+            <section class="commerce-section">
+                <h3>Express Mobile Order</h3>
+                <div class="menu-grid">
+                    <div class="menu-item" onclick="placeOrder('Stadium Dog', 8, 5)">
+                        <span class="icon">🌭</span>
+                        <div>Stadium Dog</div>
+                        <span class="price">$8</span>
+                    </div>
+                    <div class="menu-item" onclick="placeOrder('Premium Beer', 12, 2)">
+                        <span class="icon">🍺</span>
+                        <div>Premium Beer</div>
+                        <span class="price">$12</span>
+                    </div>
+                    <div class="menu-item" onclick="placeOrder('Loaded Nachos', 10, 8)">
+                        <span class="icon">🧀</span>
+                        <div>Loaded Nachos</div>
+                        <span class="price">$10</span>
+                    </div>
+                </div>
+                
+                <!-- Dynamic Queue Container -->
+                <div id="queuesContainer">
+                    <!-- Queue tracking cards injected by JS -->
+                </div>
+                
+            </section>
+        </main>
+
+        <div class="bottom-nav">
+            <a href="#" class="active">📱 Home</a>
+            <a href="#">🍔 Order</a>
+            <a href="#">📍 Map</a>
+            <a href="#">🎟️ Tickets</a>
+        </div>
+    </div>
+    <script src="fan.js"></script>
+</body>
+</html>

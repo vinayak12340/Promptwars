@@ -1,0 +1,165 @@
+:root {
+    --bg-color: #0d1117;
+    --panel-bg: #161b22;
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --accent-glow: #38bdf8;
+    --accent-red: #f85149;
+    --accent-green: #2ea043;
+    --accent-yellow: #d29922;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    overflow: hidden; /* App like feel */
+}
+
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 3rem;
+}
+
+.logo span { color: var(--accent-glow); }
+
+.side-nav { display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
+.side-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+.side-nav a:hover, .side-nav a.active {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent-glow);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding-top: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.green { background: var(--accent-green); animation: pulse 2s infinite; }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(46, 160, 67, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); }
+}
+
+/* Main */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.time-display {
+    font-family: monospace;
+    font-size: 1.25rem;
+    color: var(--accent-glow);
+}
+
+/* Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1.5rem;
+    height: calc(100vh - 100px);
+}
+
+.glass-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.badge.live {
+    background: rgba(248, 81, 73, 0.2);
+    color: var(--accent-red);
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.heatmap-panel { grid-row: span 2; }
+.canvas-container { position: relative; flex-grow: 1; border-radius: 0.5rem; overflow: hidden; background: #000; }
+canvas { display: block; width: 100%; height: 100%; }
+.stadium-overlay {
+    position: absolute; inset: 0;
+    background: url('heat_map_1776008735870.png') center/cover;
+    opacity: 0.2; pointer-events: none; mix-blend-mode: screen;
+}
+
+.dispatch-form { display: flex; flex-direction: column; gap: 1rem; }
+select, textarea {
+    width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+    background: #0d1117; border: 1px solid var(--glass-border); color: #fff;
+    font-family: inherit;
+}
+textarea { resize: none; height: 80px; }
+
+.dispatch-btn {
+    background: var(--accent-glow); color: #000; padding: 0.75rem;
+    border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+}
+.dispatch-btn:hover { background: #fff; }
+
+.status-msg { margin-top: 0.5rem; font-size: 0.85rem; color: var(--accent-green); height: 20px;}
+
+.chart-container { flex-grow: 1; position: relative; }
+
+.activity-feed { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+.feed-item {
+    background: rgba(255,255,255,0.05); padding: 0.75rem;
+    border-radius: 0.5rem; border-left: 3px solid var(--accent-glow);
+    font-size: 0.85rem; animation: slideIn 0.3s ease;
+}
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
