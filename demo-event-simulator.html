@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS Demo - Event Scheduler with ML Predictions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #c9d1d9;
+            overflow-x: hidden;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .demo-header h1 {
+            font-size: 2.5rem;
+            color: #38bdf8;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-header p {
+            color: #8b949e;
+            font-size: 1.1rem;
+        }
+
+        .event-time {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #38bdf8;
+            font-family: monospace;
+            margin-top: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-section {
+            background: rgba(22, 27, 34, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-section h2 {
+            font-size: 1.3rem;
+            color: #38bdf8;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .phase-badge {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .phase-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .phase-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin-top: 0.75rem;
+            transition: width 0.3s ease;
+        }
+
+        .demo-forecast-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid #38bdf8;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .demo-forecast-item span {
+            font-size: 0.9rem;
+        }
+
+        .demo-forecast-item span:nth-child(2) {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .demo-forecast-item span:nth-child(3) {
+            text-align: right;
+        }
+
+        .demo-prediction-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid #38bdf8;
+            animation: slideIn 0.4s ease;
+        }
+
+        .demo-prediction-item.normal {
+            border-left-color: #2ea043;
+        }
+
+        .demo-prediction-item.medium {
+            border-left-color: #d29922;
+        }
+
+        .demo-prediction-item.high {
+            border-left-color: #f85149;
+        }
+
+        .demo-prediction-item.critical {
+            border-left-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            animation: pulse-critical 1.5s infinite;
+        }
+
+        @keyframes pulse-critical {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(255, 68, 68, 0.1); }
+        }
+
+        .demo-prediction-item strong {
+            display: block;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-prediction-item div {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-bottom: 0.3rem;
+        }
+
+        .demo-rec {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #38bdf8;
+            font-size: 0.9rem;
+            animation: slideIn 0.4s ease;
+        }
+
+        .timeline {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .timeline h3 {
+            color: #38bdf8;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .timeline-events {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .timeline-event {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .timeline-event:hover {
+            background: rgba(56, 189, 248, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .timeline-event.active {
+            background: #38bdf8;
+            color: #000;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #8b949e;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .info-box {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .speed-control {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(22, 27, 34, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .speed-control label {
+            display: block;
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .speed-control input {
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            border-radius: 0.3rem;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.normal { background: #2ea043; }
+        .legend-dot.medium { background: #d29922; }
+        .legend-dot.high { background: #f85149; }
+        .legend-dot.critical { background: #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🏟️ NEXUS Smart Venue - Live Event Simulation</h1>
+            <p>Watch how ML predictions guide operations throughout the event</p>
+            <div class="event-time" id="demoEventTime">Loading...</div>
+            <div class="info-box">
+                💡 <strong>Demo Speed:</strong> 1 real second = 10 minutes of event time (100x speed)
+                <br>The event runs from Pre-Game → Post-Game spanning ~3 minutes of real-time
+            </div>
+        </div>
+
+        <div class="demo-grid">
+            <!-- Current Phase -->
+            <div class="demo-section">
+                <h2>📍 Current Event Phase</h2>
+                <div id="currentPhaseDemo">
+                    <div class="phase-badge" style="background-color: #38bdf8;">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Staff Requirements -->
+            <div class="demo-section">
+                <h2>👷 Staff Requirements</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Required Staff</div>
+                        <div class="stat-value" id="staffRequired">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Current Deployed</div>
+                        <div class="stat-value" id="staffDeployed">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demand Forecast -->
+            <div class="demo-section full-width">
+                <h2>📊 Demand Forecast (ML Predictions)</h2>
+                <div id="demoDemandForecast">Loading...</div>
+            </div>
+
+            <!-- Crowd Predictions -->
+            <div class="demo-section full-width">
+                <h2>👥 Crowd Density Predictions (AI Forecast)</h2>
+                <div id="demoCrowdPrediction">Loading...</div>
+            </div>
+
+            <!-- Revenue Forecast -->
+            <div class="demo-section">
+                <h2>💰 Revenue Forecast</h2>
+                <div id="demoRevenueForcast">Loading...</div>
+            </div>
+
+            <!-- Smart Recommendations -->
+            <div class="demo-section">
+                <h2>⚡ Smart Recommendations</h2>
+                <div id="demoRecommendations">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Event Timeline -->
+        <div class="timeline">
+            <h3>📅 Event Timeline</h3>
+            <div class="timeline-events" id="timelineEvents">
+                <!-- Generated by JavaScript -->
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot normal"></div>
+                    <span>Normal Load</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot medium"></div>
+                    <span>Medium Load</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot high"></div>
+                    <span>High Load</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot critical"></div>
+                    <span>Critical Load</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div style="margin-top: 3rem; padding: 2rem; background: rgba(46, 160, 67, 0.1); border: 1px solid rgba(46, 160, 67, 0.3); border-radius: 1rem;">
+            <h3 style="color: #2ea043; margin-bottom: 1rem;">📖 How to Use This Demo</h3>
+            <ul style="list-style: none; color: #8b949e; line-height: 1.8;">
+                <li>✅ Watch the event progress through 7 phases in ~3 real minutes</li>
+                <li>✅ See ML predictions update in real-time</li>
+                <li>✅ Observe how demand spikes during halftime (3-5x normal)</li>
+                <li>✅ Check crowd predictions for staffing decisions</li>
+                <li>✅ Notice how revenue forecasts change with demand</li>
+                <li>✅ Use recommendations to guide operations</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="demo-scheduler.js"></script>
+    <script>
+        // Initialize timeline
+        function initializeTimeline() {
+            const scheduler = new EventScheduler();
+            const container = document.getElementById('timelineEvents');
+            
+            container.innerHTML = scheduler.phases.map((phase, idx) => `
+                <div class="timeline-event" style="background-color: ${phase.color}33; border-color: ${phase.color};" 
+                     onclick="console.log('${phase.name}')">
+                    <div style="font-weight: 800; font-size: 0.9rem;">${phase.name}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">${Math.abs(phase.endMin - phase.startMin)} min</div>
+                </div>
+            `).join('');
+        }
+
+        // Enhanced update with revenue and staff
+        const originalUpdate = window.updateDemoDashboard;
+        window.updateDemoDashboard = function() {
+            const phase = demoScheduler.getCurrentPhase();
+            if (!phase) return;
+
+            // Call original update
+            originalUpdate.call(this);
+
+            // Update staff requirements
+            document.getElementById('staffRequired').textContent = phase.staffNeeded;
+            document.getElementById('staffDeployed').textContent = Math.max(20, Math.round(phase.staffNeeded * 0.85));
+
+            // Update revenue forecast
+            const revenue = demoScheduler.generateRevenueForecasts();
+            const revenueHTML = revenue.map(r => `
+                <div style="padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem; margin-bottom: 0.5rem;">
+                    <strong>${r.category}</strong>
+                    <div style="font-size: 0.85rem; color: #8b949e; margin-top: 0.3rem;">
+                        Predicted: $${r.predicted.toLocaleString()} ${r.trend}${r.trendPercent}%
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('demoRevenueForcast').innerHTML = revenueHTML;
+
+            // Highlight active timeline event
+            const timeline = document.querySelectorAll('.timeline-event');
+            timeline.forEach((el, idx) => {
+                el.classList.remove('active');
+                if (demoScheduler.phases[idx] === phase) {
+                    el.classList.add('active');
+                }
+            });
+        };
+
+        // Start demo
+        initializeTimeline();
+        setInterval(updateDemoDashboard, 500);
+        updateDemoDashboard();
+    </script>
+</body>
+</html>

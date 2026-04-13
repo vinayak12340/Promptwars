@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Fan App</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="fan.css">
+    <link rel="stylesheet" href="fan.css?v=2">
 </head>
 <body>
     <div class="mobile-frame">
@@ -33,6 +33,21 @@
             <div class="emergency-map"></div>
         </div>
 
+        <!-- AI CHATBOT COMPANION -->
+        <div id="chatbot" class="chatbot-widget">
+            <div class="chatbot-header" onclick="toggleChatbot()">
+                <div class="chat-icon">🤖 NEXUS AI</div>
+                <div class="minimize-btn">−</div>
+            </div>
+            <div class="chatbot-body hidden">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="handleChatInput(event)">
+                    <button onclick="sendChat()">Send</button>
+                </div>
+            </div>
+        </div>
+
         <main class="app-content">
             
             <!-- Washrooms Tracker -->
@@ -56,7 +71,70 @@
                 </div>
             </section>
 
-            <!-- AR Wayfinding Simulation -->
+            <!-- AI SMART QUEUE PREDICTION & RECOMMENDATIONS -->
+            <section class="predict-section">
+                <div class="section-title">🧠 AI Smart Advisor</div>
+                <div class="prediction-card glass">
+                    <div class="predict-header">
+                        <h3>Best Time to Order</h3>
+                        <span class="ai-badge">Powered by AI</span>
+                    </div>
+                    <div id="aiRecommendation" class="recommendation-box">
+                        <p class="recommend-text">Analyzing crowd patterns...</p>
+                        <div class="recommend-item" style="margin-top: 15px;">
+                            <span class="icon">⏰</span>
+                            <span id="bestTimeText">Checking patterns...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Menu Recommendations -->
+                <div class="smart-suggestions">
+                    <h3>🎯 Personalized Menu</h3>
+                    <div class="menu-suggestions" id="smartMenu">
+                        <!-- AI will inject recommendations -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- WELLNESS & HYDRATION TRACKER -->
+            <section class="wellness-section">
+                <h3>💚 Your Wellness</h3>
+                <div class="wellness-grid">
+                    <div class="wellness-card" onclick="logHydration()">
+                        <div class="wellness-icon">💧</div>
+                        <div class="wellness-label">Stay Hydrated</div>
+                        <div class="wellness-value" id="hydrationCount">0 cups</div>
+                        <div class="wellness-status" id="hydrationStatus">Good!</div>
+                    </div>
+                    <div class="wellness-card" onclick="suggestBreak()">
+                        <div class="wellness-icon">🪑</div>
+                        <div class="wellness-label">Break Time</div>
+                        <div class="wellness-value" id="breakCount">0 min</div>
+                        <div class="wellness-status" id="breakStatus">Suggested: 10m</div>
+                    </div>
+                    <div class="wellness-card">
+                        <div class="wellness-icon">⚡</div>
+                        <div class="wellness-label">Energy Level</div>
+                        <div class="wellness-value" id="energyLevel">85%</div>
+                        <div class="wellness-status green">Excellent!</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SOCIAL FAN CONNECT -->
+            <section class="social-section">
+                <h3>👥 Find Friends</h3>
+                <div class="social-connect">
+                    <button class="social-btn primary" onclick="startFanSearch()">🔍 Find Fans Nearby</button>
+                    <button class="social-btn secondary" onclick="showFriendsList()">👯 My Connections</button>
+                </div>
+                <div id="fanSearchResults" class="fan-results hidden">
+                    <!-- Search results injected here -->
+                </div>
+            </section>
+
+            <section class="ar-section">
             <section class="ar-section">
                 <div class="ar-container">
                     <div class="ar-overlay">

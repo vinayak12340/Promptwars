@@ -110,3 +110,207 @@ if ("geolocation" in navigator) {
 } else {
     document.getElementById('userLocation').innerText = `📍 GPS: Not Supported`;
 }
+
+// ============= NEW FEATURES: AI & WELLNESS =============
+
+// 1. AI CHATBOT COMPANION
+let chatHistory = [];
+const aiResponses = [
+    { keyword: "wait", response: "Most concessions have 5-10 min waits right now. I recommend ordering beer - only 2 min wait! ⚡" },
+    { keyword: "bathroom", response: "North Concourse bathroom has shortest wait at 1 min. South has 9 min. Stay hydrated! 💧" },
+    { keyword: "seat", response: "Your seat (Sect 114, Row H, Seat 12) has great sightlines! Enjoy the game! 🎉" },
+    { keyword: "crowd", response: "We're predicting heavy crowds at concessions in 3 minutes. Order now while queues are short! 🔥" },
+    { keyword: "route", response: "Fastest route to bathroom: Exit and turn left. AR navigation activated! 📍" },
+    { keyword: "recommend", response: "Since it's halftime, I recommend Stadium Dogs (5 min) or Premium Beer (2 min). Both popular! 🌭🍺" },
+    { keyword: "help", response: "I can help with: wait times, recommendations, directions, wellness tips, and friend connections! Ask away! 🤖" }
+];
+
+function toggleChatbot() {
+    const body = document.querySelector('.chatbot-body');
+    body.classList.toggle('hidden');
+}
+
+function handleChatInput(event) {
+    if(event.key === 'Enter') sendChat();
+}
+
+function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if(!msg) return;
+    
+    const messagesDiv = document.getElementById('chatMessages');
+    
+    // User message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-message user';
+    userMsg.innerText = msg;
+    messagesDiv.appendChild(userMsg);
+    
+    // AI Response
+    setTimeout(() => {
+        let response = "I'm here to help! Ask about wait times, recommendations, or facilities around the venue.";
+        const lowerMsg = msg.toLowerCase();
+        for(let r of aiResponses) {
+            if(lowerMsg.includes(r.keyword)) {
+                response = r.response;
+                break;
+            }
+        }
+        
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'chat-message ai';
+        aiMsg.innerText = response;
+        messagesDiv.appendChild(aiMsg);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }, 300);
+    
+    input.value = '';
+    chatHistory.push({ user: msg, timestamp: Date.now() });
+}
+
+// 2. AI SMART QUEUE PREDICTION & RECOMMENDATIONS
+function initAIRecommendations() {
+    setInterval(() => {
+        updateQueuePrediction();
+        generateSmartMenuRecommendations();
+    }, 30000); // Update every 30 seconds
+    
+    // Initial call
+    updateQueuePrediction();
+    generateSmartMenuRecommendations();
+}
+
+function updateQueuePrediction() {
+    const items = [
+        { name: 'Stadium Dog', wait: 5, price: '$8' },
+        { name: 'Premium Beer', wait: 2, price: '$12' },
+        { name: 'Nachos', wait: 8, price: '$10' },
+        { name: 'Team Jersey', wait: 2, price: '$85' }
+    ];
+    
+    // Find shortest wait item
+    const bestItem = items.reduce((a, b) => a.wait < b.wait ? a : b);
+    const nextBestTime = bestItem.wait + Math.floor(Math.random() * 3);
+    
+    document.getElementById('bestTimeText').innerHTML = 
+        `📊 <strong>${bestItem.name}</strong> has shortest wait: <strong style="color: #00ff00;">${bestItem.wait} min</strong><br>
+        <small>Next surge expected in ${nextBestTime} min - Order now!</small>`;
+}
+
+function generateSmartMenuRecommendations() {
+    const menu = [
+        { name: '🌭 Stadium Dog', price: '$8', wait: 5, score: 8.5 },
+        { name: '🍺 Cold Beer', price: '$12', wait: 2, score: 9.2 },
+        { name: '🧀 Nachos Deluxe', price: '$10', wait: 8, score: 7.8 },
+        { name: '🍿 Popcorn', price: '$6', wait: 1, score: 8.7 }
+    ];
+    
+    // Sort by AI score + wait time efficiency
+    menu.sort((a, b) => (b.score / (b.wait + 1)) - (a.score / (a.wait + 1)));
+    
+    const container = document.getElementById('smartMenu');
+    container.innerHTML = menu.slice(0, 3).map((item, idx) => `
+        <div class="suggestion-card" onclick="placeOrder('${item.name.replace(/[🌭🍺🧀🍿]/g, '').trim()}', ${item.price.replace('$','')}, ${item.wait})" style="animation-delay: ${idx * 0.1}s">
+            <div class="suggestion-rating">⭐ ${item.score}/10</div>
+            <div class="suggestion-title">${item.name}</div>
+            <div class="suggestion-meta">${item.price} • Wait: ${item.wait}m</div>
+        </div>
+    `).join('');
+}
+
+// 3. WELLNESS TRACKING
+let hydrationLog = 0;
+let breakTime = 0;
+let energyLevel = 85;
+
+function logHydration() {
+    hydrationLog++;
+    document.getElementById('hydrationCount').innerText = hydrationLog + ' cups';
+    
+    const status = hydrationLog >= 3 ? 'Perfect! 💪' : hydrationLog >= 2 ? 'Good! 😊' : 'Drink more! 💧';
+    document.getElementById('hydrationStatus').innerText = status;
+    
+    energyLevel = Math.min(100, energyLevel + 5);
+    updateEnergyLevel();
+    
+    showNotification('wellness', "Great! Stay hydrated! 💧");
+}
+
+function suggestBreak() {
+    breakTime += 10;
+    document.getElementById('breakCount').innerText = breakTime + ' min';
+    
+    const status = breakTime >= 30 ? 'Well rested! ✨' : 'Take more breaks! 🪑';
+    document.getElementById('breakStatus').innerText = status;
+    
+    energyLevel = Math.min(100, energyLevel + 10);
+    updateEnergyLevel();
+    
+    showNotification('wellness', "You've earned a break! Relax and recharge! 🪑");
+}
+
+function updateEnergyLevel() {
+    let level = energyLevel;
+    const status = level >= 75 ? 'Excellent!' : level >= 50 ? 'Good' : 'Low - Take a break!';
+    const statusColor = level >= 75 ? 'green' : level >= 50 ? 'yellow' : 'red';
+    
+    document.getElementById('energyLevel').innerText = level.toFixed(0) + '%';
+    document.getElementById('energyLevel').parentElement.className = 'wellness-value ' + statusColor;
+}
+
+// Auto-remind hydration and breaks
+setInterval(() => {
+    if(hydrationLog < 2) {
+        showNotification('wellness', "💧 Remember to stay hydrated!");
+    }
+}, 900000); // Every 15 minutes
+
+// 4. SOCIAL FAN CONNECT
+const localFans = [
+    { name: 'Alex Chen', section: 'Sect 114', distance: '2 sections away', interests: ['Beer', 'Food'], avatar: '👨' },
+    { name: 'Sarah Miller', section: 'Sect 114', distance: 'Same section!', interests: ['Jersey', 'Snacks'], avatar: '👩' },
+    { name: 'Mike Rodriguez', section: 'Sect 115', distance: '1 section away', interests: ['Hot Dogs', 'Nachos'], avatar: '👨' },
+];
+
+function startFanSearch() {
+    const resultsDiv = document.getElementById('fanSearchResults');
+    resultsDiv.classList.remove('hidden');
+    resultsDiv.innerHTML = '<div class="searching">🔍 Searching nearby fans...</div>';
+    
+    setTimeout(() => {
+        resultsDiv.innerHTML = localFans.map((fan, idx) => `
+            <div class="fan-card" style="animation-delay: ${idx * 0.1}s">
+                <div class="fan-avatar">${fan.avatar}</div>
+                <div class="fan-info">
+                    <div class="fan-name">${fan.name}</div>
+                    <div class="fan-location">${fan.distance}</div>
+                    <div class="fan-interests">${fan.interests.join(' • ')}</div>
+                </div>
+                <button class="connect-btn" onclick="connectWithFan('${fan.name}')">👋 Connect</button>
+            </div>
+        `).join('');
+    }, 1500);
+}
+
+function connectWithFan(name) {
+    showNotification('social', `🎉 Connected with ${name}! Check your chat to say hi! 👋`);
+    console.log(`Connected with ${name}`);
+}
+
+function showFriendsList() {
+    showNotification('social', "Your friend list is syncing... Check back soon! 👥");
+}
+
+// Initialize all new features on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initAIRecommendations();
+    
+    // Auto-show a welcome message from the AI
+    setTimeout(() => {
+        const welcome = document.createElement('div');
+        welcome.className = 'chat-message ai';
+        welcome.innerText = "👋 Hi Jamie! I'm your NEXUS AI Assistant. Ask me about wait times, recommendations, or facilities! Type 'help' for options.";
+        document.getElementById('chatMessages').appendChild(welcome);
+    }, 500);
+});
