@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Aurora Mesh Background -->
+    <div class="aurora-container">
+        <div class="aurora-blob aurora-1"></div>
+        <div class="aurora-blob aurora-2"></div>
+        <div class="aurora-blob aurora-3"></div>
+    </div>
     <nav class="navbar">
         <div class="logo">NEXUS<span>VENUE</span></div>
         <ul class="nav-links">
@@ -19,13 +25,14 @@
     </nav>
 
     <header class="hero">
+        <canvas id="heroCanvas"></canvas>
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="hero-title animate-title">The Future of <br><span>Stadium Experiences</span></h1>
             <p class="hero-subtitle animate-subtitle">A comprehensive Smart Venue Experience System integrating IoT, AI, and AR to redefine crowd movement, wait times, and fan engagement.</p>
             <div class="hero-buttons animate-buttons">
-                <a href="dashboard.html" target="_blank" class="cta-btn main-cta" style="margin-right: 15px;">Launch Operations Dashboard</a>
-                <a href="fan-app.html" target="_blank" class="cta-btn secondary">Launch Fan Mobile App</a>
+                <a href="dashboard.html" class="cta-btn main-cta" style="margin-right: 15px;">Launch Operations Dashboard</a>
+                <a href="fan-app.html" class="cta-btn secondary">Experience Mobile Fan App</a>
             </div>
         </div>
         <div class="scroll-indicator">
@@ -41,44 +48,55 @@
                 <p>Enhance attendee satisfaction through intelligent, interconnected solutions.</p>
             </div>
             
-            <div class="grid-features">
-                <div class="feature-card glass">
-                    <div class="feature-img-wrapper">
-                        <img src="heat_map_1776008735870.png" alt="Dynamic Heat Map for Crowd Monitoring" loading="lazy">
-                    </div>
-                    <div class="feature-info">
-                        <h3>Crowd Monitoring & Heat Maps</h3>
-                        <p>Real-time tracking of attendee density. Dynamic digital signage reroutes foot traffic automatically to optimize movement and prevent bottlenecks.</p>
-                    </div>
-                </div>
-
-                <div class="feature-card glass">
-                    <div class="feature-img-wrapper">
-                        <img src="ar_nav_1776008718925.png" alt="AR Navigation Interface on Smartphone" loading="lazy">
-                    </div>
-                    <div class="feature-info">
-                        <h3>Augmented Reality Navigation</h3>
-                        <p>Turn-by-turn AR wayfinding on mobile devices. Guide fans to seats, restrooms, or interactive hubs while ensuring inclusivity and accessibility.</p>
-                    </div>
-                </div>
-
-                <div class="feature-card glass text-only">
-                    <div class="feature-info">
-                        <div class="icon-wrap">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            <div class="bento-grid" id="bentoGrid">
+                <!-- Large Top Span -->
+                <div class="bento-card span-2 glass">
+                    <div class="bento-glow"></div>
+                    <div class="bento-content row-layout">
+                        <div class="bento-info">
+                            <h3 class="gradient-text">Crowd Monitoring & Heat Maps</h3>
+                            <p>Real-time tracking of attendee density. Dynamic digital signage reroutes foot traffic automatically to optimize movement and prevent bottlenecks.</p>
                         </div>
-                        <h3>Zero-Wait Commerce</h3>
-                        <p>Mobile ordering, virtual queueing, and predictive staffing reduce wait times significantly, bringing the concessions to the fan, not the fan to the concessions.</p>
+                        <div class="bento-media">
+                            <img src="heat_map_1776008735870.png" alt="Dynamic Heat Map for Crowd Monitoring" loading="lazy">
+                        </div>
                     </div>
                 </div>
 
-                <div class="feature-card glass text-only highlight">
-                    <div class="feature-info">
-                        <div class="icon-wrap">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                <!-- Two smaller squares -->
+                <div class="bento-card glass">
+                    <div class="bento-glow"></div>
+                    <div class="bento-content" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                        <div class="icon-wrap">🍔</div>
+                        <div>
+                            <h3>Zero-Wait Commerce</h3>
+                            <p>Mobile ordering and predictive staffing reduce wait times significantly.</p>
                         </div>
-                        <h3>Real-time Coordination</h3>
-                        <p>Personalized notifications, emergency routing protocols, and integrated event timelines keep all attendees perfectly synchronized with the venue operations.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card glass">
+                    <div class="bento-glow"></div>
+                    <div class="bento-content" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                        <div class="bento-media-sm" style="height: 120px; overflow: hidden; border-radius: 1rem; margin-bottom: 20px;">
+                            <img src="ar_nav_1776008718925.png" alt="AR Navigation Interface on Smartphone" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8; filter: hue-rotate(40deg);">
+                        </div>
+                        <div>
+                            <h3>AR Navigation</h3>
+                            <p>Turn-by-turn AR wayfinding on mobile devices.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Long horizontal bottom -->
+                <div class="bento-card span-2 glass highlight-bento">
+                    <div class="bento-glow"></div>
+                    <div class="bento-content" style="display: flex; align-items: center; gap: 2rem;">
+                        <div class="icon-wrap lg" style="width: 80px; height: 80px; font-size: 2rem; flex-shrink: 0;">⚡</div>
+                        <div>
+                            <h3 class="gradient-text">Real-time Coordination System</h3>
+                            <p>Personalized notifications, emergency routing protocols, and integrated event timelines keep all attendees perfectly synchronized with the venue operations.</p>
+                        </div>
                     </div>
                 </div>
             </div>

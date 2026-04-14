@@ -114,38 +114,47 @@ function drawHeatmap() {
 setTimeout(drawHeatmap, 500);
 
 // 3. Queue Chart Simulation using Chart.js
-const ctxChart = document.getElementById('queueChart').getContext('2d');
-const queueChart = new Chart(ctxChart, {
-    type: 'line',
-    data: {
-        labels: ['-30m', '-25m', '-20m', '-15m', '-10m', '-5m', 'Now'],
-        datasets: [{
-            label: 'Sector A Wait (Mins)',
-            data: [5, 12, 18, 14, 8, 4, 3],
-            borderColor: '#38bdf8',
-            tension: 0.4,
-            borderWidth: 2,
-            pointRadius: 0
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
-            y: { grid: { color: 'rgba(255,255,255,0.05)' } }
-        }
-    }
-});
+let queueChart = null;
+try {
+    const ctxChart = document.getElementById('queueChart').getContext('2d');
+    if (typeof Chart !== 'undefined') {
+        queueChart = new Chart(ctxChart, {
+            type: 'line',
+            data: {
+                labels: ['-30m', '-25m', '-20m', '-15m', '-10m', '-5m', 'Now'],
+                datasets: [{
+                    label: 'Sector A Wait (Mins)',
+                    data: [5, 12, 18, 14, 8, 4, 3],
+                    borderColor: '#38bdf8',
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
 
-setInterval(() => {
-    const data = queueChart.data.datasets[0].data;
-    data.shift();
-    const last = data[data.length-1];
-    data.push(Math.max(0, last + (Math.random() * 6 - 3)));
-    queueChart.update('none');
-}, 5000);
+        setInterval(() => {
+            if (queueChart) {
+                const data = queueChart.data.datasets[0].data;
+                data.shift();
+                const last = data[data.length-1];
+                data.push(Math.max(0, last + (Math.random() * 6 - 3)));
+                queueChart.update('none');
+            }
+        }, 5000);
+    }
+} catch(e) {
+    console.warn("Chart.js failed to load. Chart metrics disabled.");
+}
 
 // 4. Cross-tab communication: Dispatch Alerts
 const dispatchBtn = document.getElementById('dispatchBtn');
@@ -341,3 +350,229 @@ document.addEventListener('DOMContentLoaded', () => {
     // Simulate real-time sentiment updates
     setInterval(updateSentiment, 15000);
 });
+
+// Remove Geolocation to default back to Stadium Maps
+
+
+// ============= DEMO SCENARIO LOGIC =============
+let scenarioActive = false;
+
+function triggerScenario(type) {
+    scenarioActive = true;
+    playDashboardSound('alert');
+    
+    // Flash the dashboard borders red momentarily
+    document.body.style.boxShadow = "inset 0 0 50px rgba(255, 51, 102, 0.5)";
+    setTimeout(() => { document.body.style.boxShadow = "none"; }, 1000);
+
+    const weatherPanel = document.getElementById('weatherContent');
+    const heatmap = document.querySelector('.stadium-overlay');
+    
+    if (type === 'rain') {
+        if(weatherPanel) {
+            weatherPanel.innerHTML = `
+                <div class="weather-icon" style="color: #38bdf8;">⛈️</div>
+                <div class="weather-temp" style="color: #38bdf8;">72°</div>
+                <div class="weather-details">
+                    <span style="color: #38bdf8;">☔ Heavy Rain</span>
+                    <span>💨 Wind: 25 mph E</span>
+                    <span>Flash Flood Warning</span>
+                </div>
+            `;
+        }
+        if(heatmap) heatmap.style.filter = "invert(90%) hue-rotate(220deg)";
+        generateSpecificAlert("🚨 SEVERE WEATHER: Flash rainstorm approaching. Reroute concourse A.", "critical");
+        
+    } else if (type === 'emergency') {
+        if(heatmap) heatmap.style.filter = "invert(90%) hue-rotate(320deg)"; // Turn reddish
+        generateSpecificAlert("🚨 MEDICAL EMERGENCY: Sector K restroms. Medics assigned.", "critical");
+        // Force predict
+        const content = document.getElementById('predictionContent');
+        if (content) {
+            content.innerHTML = `
+                <div class="prediction-item" style="animation: pulse-highlight 1.5s infinite; border-color: red;">
+                    <div class="pred-time">NOW</div>
+                    <div class="pred-location">Sector K</div>
+                    <div class="pred-level" style="color: red;">CRITICAL</div>
+                    <div class="pred-action">→ Dispatching Medics</div>
+                </div>
+            ` + content.innerHTML;
+        }
+        
+    } else if (type === 'vip') {
+        generateSpecificAlert("🌟 VIP ARRIVAL: Conveyance spotted at Gate 1. Security detail ready.", "info");
+        
+    } else if (type === 'reroute') {
+        // Dramatic Crowd Movement Demo
+        generateSpecificAlert("⚠️ BOTTLENECK DETECTED: Gate 2 overcrowded. AI dynamically rerouting crowd to Gate 5.", "warning");
+        
+        // Change attractors dynamically to repel from one side and attract to the other
+        attractors = [
+            { x: canvas.width * 0.8, y: canvas.height * 0.5, strength: -1.5 }, // Strong Repulsor (Push crowd away)
+            { x: canvas.width * 0.2, y: canvas.height * 0.8, strength: 1.5 },  // Strong Attractor (Pull crowd here)
+            { x: canvas.width * 0.2, y: canvas.height * 0.2, strength: 1.0 }
+        ];
+
+        if(heatmap) heatmap.style.filter = "invert(90%) hue-rotate(280deg)"; // Purple tint to show shifting
+    }
+}
+
+function resetScenarios() {
+    scenarioActive = false;
+    playDashboardSound('click');
+    const heatmap = document.querySelector('.stadium-overlay');
+    if(heatmap) heatmap.style.filter = "invert(90%) hue-rotate(180deg)"; // original
+    
+    // Restore default attractors
+    attractors = [
+        { x: canvas.width * 0.2, y: canvas.height * 0.2, strength: 0.5 },
+        { x: canvas.width * 0.8, y: canvas.height * 0.4, strength: 0.8 },
+        { x: canvas.width * 0.5, y: canvas.height * 0.8, strength: 0.6 }
+    ];
+    
+    updateWeather();
+    updateCrowdPredictions(); // reset
+}
+
+function generateSpecificAlert(msg, level) {
+    const alertsList = document.getElementById('alertsList');
+    if (!alertsList) return;
+    const div = document.createElement('div');
+    div.className = `alert-item ${level}`;
+    div.innerHTML = `
+        <span class="alert-icon">${level==='critical'?'🚨':'ℹ️'}</span>
+        <span class="alert-text">${msg}</span>
+    `;
+    alertsList.prepend(div);
+}
+
+// ============= COPILOT AI LOGIC =============
+function toggleCopilot() {
+    const panel = document.getElementById('copilotPanel');
+    if (!panel) return;
+    panel.classList.toggle('active');
+    if (panel.classList.contains('active')) {
+        playDashboardSound('click');
+        const input = document.getElementById('copilotInput');
+        if (input) input.focus();
+    }
+}
+
+function askCopilot(text) {
+    const input = document.getElementById('copilotInput');
+    if (input) {
+        input.value = text;
+        handleCopilotInput();
+    }
+}
+
+function handleCopilotInput() {
+    const input = document.getElementById('copilotInput');
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    playDashboardSound('click');
+    const chat = document.getElementById('copilotChat');
+
+    // Add User Message
+    chat.innerHTML += `
+        <div class="chat-message user">
+            ${text}
+        </div>
+    `;
+    input.value = '';
+    chat.scrollTop = chat.scrollHeight;
+
+    // Add Typing Indicator
+    const typingId = 'typing-' + Date.now();
+    chat.innerHTML += `
+        <div class="chat-message typing" id="${typingId}">
+            <div class="dot-flashing"></div>
+        </div>
+    `;
+    chat.scrollTop = chat.scrollHeight;
+
+    // Simulate AI Processing Delay
+    setTimeout(() => {
+        const typingEl = document.getElementById(typingId);
+        if(typingEl) typingEl.remove();
+
+        let aiResponse = "Processing request...";
+        
+        // Simple heuristic matching
+        if (text.toLowerCase().includes('gate 4')) {
+            aiResponse = "Gate 4 currently has a throughput of 45 people/min. Density is at 80% capacity. Recommending dispatching 2 additional field staff to assist with ticket scanning and opening Lane D.";
+        } else if (text.toLowerCase().includes('rain')) {
+            aiResponse = "Drafting broadcast: 'Attention Fans, due to approaching rain, we recommend moving to covered concourses B and D. Hot beverages are now 20% off at all interior stalls.' <br><br>👉 <button onclick=\"dispatchBroadCastFromAI()\" style=\"margin-top:5px; background:var(--accent-glow);color:#000;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;\">Approve & Send to Fan App</button>";
+        } else if (text.toLowerCase().includes('staffing')) {
+            aiResponse = "Based on predictive queuing, Concourse A concessions will peak in 15 minutes. Suggesting automated text alerts to 4 reserve kitchen staff to report to stations A1 and A2.";
+        } else {
+            aiResponse = "I've logged your request. The system is adjusting dynamically based on your input parameters.";
+        }
+
+        chat.innerHTML += `
+            <div class="chat-message ai">
+                <strong>Nexus:</strong> ${aiResponse}
+            </div>
+        `;
+        playDashboardSound('notification');
+        chat.scrollTop = chat.scrollHeight;
+
+    }, 1500);
+}
+
+function dispatchBroadCastFromAI() {
+    // Send to Fan App
+    const payload = { type: 'emergency', message: 'Attention Fans, due to approaching rain, we recommend moving to covered concourses B and D.', timestamp: Date.now() };
+    localStorage.setItem('nexus_alert', JSON.stringify(payload));
+    
+    const chat = document.getElementById('copilotChat');
+    chat.innerHTML += `
+        <div class="chat-message" style="text-align:center; font-size: 0.8rem; color: var(--accent-green); background: rgba(0,255,157,0.1); border: 1px solid var(--accent-green);">
+            ✓ Broadcast pushed globally to Fan App.
+        </div>
+    `;
+    chat.scrollTop = chat.scrollHeight;
+}
+
+// Global dashboard audio
+let audioCtx = null;
+try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+} catch(e) {
+    console.warn("Audio context not supported or blocked by browser policy.");
+}
+
+function playDashboardSound(type) {
+    if (!audioCtx) return;
+    try {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if(type === 'click') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        } else if (type === 'notification') {
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(900, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        } else if (type === 'alert') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.5);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+    } catch(err) {
+        console.warn("Audio playback failed", err);
+    }
+}

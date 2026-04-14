@@ -3,189 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Fan App</title>
+    <title>Nexus Fan App Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="fan.css?v=2">
+    <link rel="stylesheet" href="fan-app.css">
 </head>
 <body>
     <div class="mobile-frame">
-        <div class="status-bar">
-            <span>9:41</span>
-            <div class="icons">📶 🔋</div>
-        </div>
-
-        <nav class="app-header">
-            <div>
-                <div class="user-greeting">Hi, Jamie 👋</div>
-                <div class="seat-info">Sect 114 • Row H • Seat 12</div>
-                <div id="userLocation" style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">📍 Locating GPS...</div>
-            </div>
-            <button class="theme-toggle" onclick="document.body.classList.toggle('light-theme')">🌓 Theme</button>
-        </nav>
-
-        <!-- Notification Banner Container -->
-        <div id="notificationBanner" class="notification-banner hidden"></div>
-
-        <!-- EMERGENCY MAP OVERLAY -->
-        <div id="emergencyOverlay" class="emergency-overlay hidden">
-            <h2>🚨 EVACUATION ROUTE 🚨</h2>
-            <p>Please proceed to EXIT 4 immediately.</p>
-            <div class="emergency-map"></div>
-        </div>
-
-        <!-- AI CHATBOT COMPANION -->
-        <div id="chatbot" class="chatbot-widget">
-            <div class="chatbot-header" onclick="toggleChatbot()">
-                <div class="chat-icon">🤖 NEXUS AI</div>
-                <div class="minimize-btn">−</div>
-            </div>
-            <div class="chatbot-body hidden">
-                <div class="chat-messages" id="chatMessages"></div>
-                <div class="chat-input-wrapper">
-                    <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="handleChatInput(event)">
-                    <button onclick="sendChat()">Send</button>
-                </div>
-            </div>
-        </div>
-
-        <main class="app-content">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
             
-            <!-- Washrooms Tracker -->
-            <section class="washroom-section">
-                <h3>Facilities Status</h3>
-                <div class="washroom-grid">
-                    <div class="washroom-card" onclick="pingWashroom()">
-                        <div class="icon">🚻</div>
-                        <div class="details">
-                            <strong>North Concourse</strong>
-                            <p class="wait-time short">Wait: 1 min</p>
-                        </div>
-                    </div>
-                    <div class="washroom-card" onclick="pingWashroom()">
-                        <div class="icon">🚻</div>
-                        <div class="details">
-                            <strong>South Concourse</strong>
-                            <p class="wait-time long">Wait: 9 min</p>
-                        </div>
-                    </div>
+            <!-- Global Notification Overlay -->
+            <div id="notificationBanner" class="notification-banner">
+                <div class="notif-icon">🔔</div>
+                <div class="notif-content">
+                    <h4 id="notifType">Priority Alert</h4>
+                    <p id="notifMsg">Message goes here</p>
                 </div>
-            </section>
+            </div>
 
-            <!-- AI SMART QUEUE PREDICTION & RECOMMENDATIONS -->
-            <section class="predict-section">
-                <div class="section-title">🧠 AI Smart Advisor</div>
-                <div class="prediction-card glass">
-                    <div class="predict-header">
-                        <h3>Best Time to Order</h3>
-                        <span class="ai-badge">Powered by AI</span>
-                    </div>
-                    <div id="aiRecommendation" class="recommendation-box">
-                        <p class="recommend-text">Analyzing crowd patterns...</p>
-                        <div class="recommend-item" style="margin-top: 15px;">
-                            <span class="icon">⏰</span>
-                            <span id="bestTimeText">Checking patterns...</span>
-                        </div>
-                    </div>
+            <!-- App Header -->
+            <header class="app-header">
+                <div class="app-greeting">
+                    <h2>Hi, Alex 👋</h2>
+                    <p>Sec 114, Row F, Seat 8</p>
                 </div>
+                <div class="app-profile">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Profile">
+                </div>
+            </header>
 
-                <!-- Smart Menu Recommendations -->
-                <div class="smart-suggestions">
-                    <h3>🎯 Personalized Menu</h3>
-                    <div class="menu-suggestions" id="smartMenu">
-                        <!-- AI will inject recommendations -->
+            <!-- AR Navigation Widget -->
+            <div class="widget ar-nav-widget">
+                <div class="ar-overlay">
+                    <span class="pulse-ring"></span>
+                    <div class="ar-marker">
+                        <div>🍿 Concessions</div>
+                        <div>2 min walk ↗</div>
                     </div>
                 </div>
-            </section>
+                <button class="launch-ar-btn" onclick="launchAR()">Launch AR Nav System</button>
+            </div>
 
-            <!-- WELLNESS & HYDRATION TRACKER -->
-            <section class="wellness-section">
-                <h3>💚 Your Wellness</h3>
-                <div class="wellness-grid">
-                    <div class="wellness-card" onclick="logHydration()">
-                        <div class="wellness-icon">💧</div>
-                        <div class="wellness-label">Stay Hydrated</div>
-                        <div class="wellness-value" id="hydrationCount">0 cups</div>
-                        <div class="wellness-status" id="hydrationStatus">Good!</div>
-                    </div>
-                    <div class="wellness-card" onclick="suggestBreak()">
-                        <div class="wellness-icon">🪑</div>
-                        <div class="wellness-label">Break Time</div>
-                        <div class="wellness-value" id="breakCount">0 min</div>
-                        <div class="wellness-status" id="breakStatus">Suggested: 10m</div>
-                    </div>
-                    <div class="wellness-card">
-                        <div class="wellness-icon">⚡</div>
-                        <div class="wellness-label">Energy Level</div>
-                        <div class="wellness-value" id="energyLevel">85%</div>
-                        <div class="wellness-status green">Excellent!</div>
-                    </div>
+            <!-- Quick Actions -->
+            <div class="action-grid">
+                <div class="action-btn" onclick="checkWaitTimes()">
+                    <div class="action-icon">🚻</div>
+                    <span>Restrooms</span>
                 </div>
-            </section>
+                <div class="action-btn" onclick="checkWaitTimes()">
+                    <div class="action-icon">👕</div>
+                    <span>Merch</span>
+                </div>
+                <div class="action-btn" onclick="showOrdering()">
+                    <div class="action-icon">🍔</div>
+                    <span>Food</span>
+                </div>
+                <div class="action-btn" onclick="checkWaitTimes()">
+                    <div class="action-icon">🎟️</div>
+                    <span>Upgrades</span>
+                </div>
+            </div>
 
-            <!-- SOCIAL FAN CONNECT -->
-            <section class="social-section">
-                <h3>👥 Find Friends</h3>
-                <div class="social-connect">
-                    <button class="social-btn primary" onclick="startFanSearch()">🔍 Find Fans Nearby</button>
-                    <button class="social-btn secondary" onclick="showFriendsList()">👯 My Connections</button>
-                </div>
-                <div id="fanSearchResults" class="fan-results hidden">
-                    <!-- Search results injected here -->
-                </div>
-            </section>
-
-            <section class="ar-section">
-            <section class="ar-section">
-                <div class="ar-container">
-                    <div class="ar-overlay">
-                        <h3>AR Wayfinding</h3>
-                        <p>Follow digital arrows to your seat.</p>
-                        <button class="cta-btn sm">Start Navigation</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Zero Wait Commerce -->
-            <section class="commerce-section">
-                <h3>Express Mobile Order</h3>
-                <div class="menu-grid">
-                    <div class="menu-item" onclick="placeOrder('Stadium Dog', 8, 5)">
-                        <span class="icon">🌭</span>
-                        <div>Stadium Dog</div>
-                        <span class="price">$8</span>
-                    </div>
-                    <div class="menu-item" onclick="placeOrder('Premium Beer', 12, 2)">
-                        <span class="icon">🍺</span>
-                        <div>Premium Beer</div>
-                        <span class="price">$12</span>
-                    </div>
-                    <div class="menu-item" onclick="placeOrder('Loaded Nachos', 10, 8)">
-                        <span class="icon">🧀</span>
-                        <div>Loaded Nachos</div>
-                        <span class="price">$10</span>
-                    </div>
-                    <div class="menu-item" onclick="placeOrder('Team Jersey', 85, 2)">
-                        <span class="icon">👕</span>
-                        <div>Team Jersey</div>
-                        <span class="price">$85</span>
-                    </div>
-                </div>
+            <!-- Zero Wait Ordering Menu -->
+            <div class="widget ordering-widget" id="orderingMenu">
+                <h3>Zero-Wait Ordering</h3>
+                <p class="subtitle">Delivered straight to your seat</p>
                 
-                <!-- Dynamic Queue Container -->
-                <div id="queuesContainer">
-                    <!-- Queue tracking cards injected by JS -->
+                <div class="menu-list">
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>Stadium Hot Dog</h4>
+                            <p>$6.50</p>
+                        </div>
+                        <button class="order-btn" onclick="placeOrder('Stadium Hot Dog')">Add</button>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>Loaded Nachos</h4>
+                            <p>$8.00</p>
+                        </div>
+                        <button class="order-btn" onclick="placeOrder('Loaded Nachos')">Add</button>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>Craft IPA Draft</h4>
+                            <p>$12.00</p>
+                        </div>
+                        <button class="order-btn" onclick="placeOrder('Craft IPA Draft')">Add</button>
+                    </div>
                 </div>
-                
-            </section>
-        </main>
+                <div id="orderStatus" class="order-status"></div>
+            </div>
 
-        <div class="bottom-nav">
-            <a href="#" class="active">📱 Home</a>
-            <a href="#">🍔 Order</a>
-            <a href="#">📍 Map</a>
-            <a href="#">🎟️ Tickets</a>
+            <!-- Live Event Timeline -->
+            <div class="widget timeline-widget">
+                <h3>Live Event Timeline</h3>
+                <div class="timeline">
+                    <div class="timeline-item past">
+                        <div class="time">18:00</div>
+                        <div class="event">Gates Open</div>
+                    </div>
+                    <div class="timeline-item active">
+                        <div class="time">19:30</div>
+                        <div class="event">Warmups Begin</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">20:00</div>
+                        <div class="event">Main Event Starts</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <div class="nav-item active">🏠</div>
+                <div class="nav-item">🗺️</div>
+                <div class="nav-item scan-btn">
+                    <div class="scan-inner">QR</div>
+                </div>
+                <div class="nav-item">🎫</div>
+                <div class="nav-item">⚙️</div>
+            </nav>
+
+        </div>
+
+        <!-- AR Full Screen View -->
+        <div id="arView" class="ar-fullscreen-view">
+            <video id="arCamera" autoplay playsinline></video>
+            <div class="ar-hud">
+                <button class="close-ar" onclick="closeAR()">✖ Close AR Mode</button>
+                <div class="ar-nav-path">
+                    <div class="ar-arrow">⬆️</div>
+                    <div class="ar-instruction">Walk straight for 50 feet</div>
+                </div>
+                <div class="ar-target-marker">
+                    <span style="font-size: 24px; margin-bottom: 5px; display: block;">🍔</span>
+                    Concessions<br>1 min wait
+                </div>
+            </div>
         </div>
     </div>
-    <script src="fan.js"></script>
+    <script src="fan-app.js"></script>
 </body>
 </html>

@@ -14,14 +14,27 @@
             <div class="logo">NEXUS<span>OPS</span></div>
             <nav class="side-nav">
                 <a href="#" class="active">Overview</a>
-                <a href="#">Crowd Control</a>
-                <a href="#">Concessions</a>
-                <a href="#">Security</a>
+                <a href="#" onclick="alert('Module securely locked during Demo Configuration.')">Crowd Control</a>
+                <a href="#" onclick="alert('Loading external Concessions API...')">Concessions</a>
+                <a href="#" onclick="alert('Access Restricted. Security clearance required.')">Security</a>
             </nav>
             <div class="status-indicator">
                 <div class="dot green"></div> System Nominal
             </div>
+
+            <!-- DEMO SCENARIO CONTROLS -->
+            <div class="demo-controls" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+                <h4 style="color: var(--accent-purple); margin-bottom: 10px; font-size: 0.85rem; letter-spacing: 2px;">⚡ LIVE SIMULATION</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="demo-btn" onclick="triggerScenario('rain')">🌧️ Simulate Rainstorm</button>
+                    <button class="demo-btn" onclick="triggerScenario('emergency')">🚨 Medical Emergency</button>
+                    <button class="demo-btn" onclick="triggerScenario('vip')">🌟 VIP Arrival (Gate 1)</button>
+                    <button class="demo-btn" onclick="triggerScenario('reroute')">🔄 Crowd Reroute Demo</button>
+                    <button class="demo-btn" style="background: rgba(46, 160, 67, 0.2); border-color: rgba(46, 160, 67, 0.4);" onclick="resetScenarios()">✅ Reset Simulation</button>
+                </div>
+            </div>
         </aside>
+
 
         <main class="main-content">
             <header class="topbar">
@@ -38,7 +51,7 @@
                     </div>
                     <div class="canvas-container" style="position: relative;">
                         <!-- Embed Google Maps -->
-                        <iframe src="https://maps.google.com/maps?q=Narendra%20Modi%20Stadium%20India&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" frameborder="0" style="border:0; filter: invert(90%) hue-rotate(180deg);" allowfullscreen></iframe>
+                        <iframe id="gmap_iframe" src="https://maps.google.com/maps?q=Narendra%20Modi%20Stadium%20India&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" frameborder="0" style="border:0; filter: invert(90%) hue-rotate(180deg);" allowfullscreen></iframe>
                         <!-- Canvas overlay for ML Hotspots -->
                         <canvas id="heatmapCanvas" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 10;"></canvas>
                     </div>
@@ -148,6 +161,34 @@
             </div>
         </main>
     </div>
+
+    <!-- AI Copilot Floating UI -->
+    <div class="copilot-widget" id="copilotWidget">
+        <button class="copilot-toggle" onclick="toggleCopilot()">
+            <span>✨</span> Ask Nexus AI
+        </button>
+        <div class="copilot-panel" id="copilotPanel">
+            <div class="copilot-header">
+                <h3>Nexus Copilot</h3>
+                <span class="badge ai">GPT-4 Active</span>
+            </div>
+            <div class="copilot-chat" id="copilotChat">
+                <div class="chat-message ai">
+                    <strong>Nexus:</strong> System operations nominal. How can I assist you in managing the venue today?
+                </div>
+            </div>
+            <div class="copilot-suggestions" id="copilotSuggestions">
+                <button onclick="askCopilot('Analyze crowd flow at Gate 4')">Analyze Gate 4</button>
+                <button onclick="askCopilot('Draft rainstorm emergency broadcast')">Draft Rain Alert</button>
+                <button onclick="askCopilot('Optimize concession staffing')">Optimize Staffing</button>
+            </div>
+            <div class="copilot-input">
+                <input type="text" id="copilotInput" placeholder="Type your command..." onkeypress="if(event.key === 'Enter') handleCopilotInput()">
+                <button onclick="handleCopilotInput()">➤</button>
+            </div>
+        </div>
+    </div>
+
     <script src="dashboard.js"></script>
 </body>
 </html>

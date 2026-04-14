@@ -66,3 +66,80 @@ function animateValue(obj, start, end, duration) {
     };
     window.requestAnimationFrame(step);
 }
+
+// ============= HERO CANVAS PARTICLES =============
+const canvas = document.getElementById('heroCanvas');
+if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let width, height, particles;
+
+    function initCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        particles = [];
+        const numParticles = Math.floor(window.innerWidth / 20); // Responsive amount of particles
+        
+        for (let i = 0; i < numParticles; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: Math.random() * 2 + 1
+            });
+        }
+    }
+
+    function drawParticles() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+        
+        for (let i = 0; i < particles.length; i++) {
+            let p = particles[i];
+            
+            p.x += p.vx;
+            p.y += p.vy;
+            
+            if (p.x < 0 || p.x > width) p.vx *= -1;
+            if (p.y < 0 || p.y > height) p.vy *= -1;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Connect to nearby
+            for (let j = i + 1; j < particles.length; j++) {
+                let p2 = particles[j];
+                let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                
+                if (dist < 150) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 - dist/1000})`;
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(drawParticles);
+    }
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    drawParticles();
+}
+
+// ============= BENTO CARD SPOTLIGHT =============
+const bentoGrid = document.getElementById('bentoGrid');
+if (bentoGrid) {
+    bentoGrid.onmousemove = e => {
+        for(const card of document.getElementsByClassName('bento-card')) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        }
+    };
+}
