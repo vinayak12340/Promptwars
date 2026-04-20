@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://www.google-analytics.com https://api.dicebear.com; img-src 'self' data: https://api.dicebear.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; font-src 'self' https://fonts.gstatic.com;">
     <title>Nexus Fan App Experience</title>
+    <!-- Google Services: Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="fan-app.css">
 </head>
@@ -41,27 +52,41 @@
                         <div>2 min walk ↗</div>
                     </div>
                 </div>
-                <button class="launch-ar-btn" onclick="launchAR()">Launch AR Nav System</button>
+                <button class="launch-ar-btn" id="btnLaunchAR">Launch AR Nav System</button>
+            </div>
+
+            <!-- Gamification Widget -->
+            <div class="widget gamification-widget">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3>Fan Leaderboard</h3>
+                    <div class="fan-points"><span id="userPoints">1,250</span> PTS ✨</div>
+                </div>
+                <div class="rank-list">
+                    <div class="rank-item"><span class="rank-pos gold">1</span> @StadiumKing <span class="rank-pts">3,400</span></div>
+                    <div class="rank-item highlight"><span class="rank-pos silver">2</span> @Alex (You) <span class="rank-pts" id="userPointsDisplay">1,250</span></div>
+                    <div class="rank-item"><span class="rank-pos bronze">3</span> @SportsFan99 <span class="rank-pts">980</span></div>
+                </div>
+                <p style="font-size: 0.75rem; color: #a1a1aa; margin-top: 10px; line-height: 1.3;">Tip: Use Zero-Wait ordering or check in early to climb the ranks!</p>
             </div>
 
             <!-- Quick Actions -->
-            <div class="action-grid">
-                <div class="action-btn" onclick="checkWaitTimes()">
-                    <div class="action-icon">🚻</div>
+            <div class="action-grid" role="group" aria-label="Quick Actions">
+                <button type="button" class="action-btn" id="btnRestrooms" aria-label="Find Restrooms">
+                    <span class="action-icon" aria-hidden="true">🚻</span>
                     <span>Restrooms</span>
-                </div>
-                <div class="action-btn" onclick="checkWaitTimes()">
-                    <div class="action-icon">👕</div>
+                </button>
+                <button type="button" class="action-btn" id="btnMerch" aria-label="Find Merchandise">
+                    <span class="action-icon" aria-hidden="true">👕</span>
                     <span>Merch</span>
-                </div>
-                <div class="action-btn" onclick="showOrdering()">
-                    <div class="action-icon">🍔</div>
+                </button>
+                <button type="button" class="action-btn" id="btnFood" aria-label="Order Food">
+                    <span class="action-icon" aria-hidden="true">🍔</span>
                     <span>Food</span>
-                </div>
-                <div class="action-btn" onclick="checkWaitTimes()">
-                    <div class="action-icon">🎟️</div>
+                </button>
+                <button type="button" class="action-btn" id="btnUpgrades" aria-label="Seat Upgrades">
+                    <span class="action-icon" aria-hidden="true">🎟️</span>
                     <span>Upgrades</span>
-                </div>
+                </button>
             </div>
 
             <!-- Zero Wait Ordering Menu -->
@@ -115,14 +140,14 @@
             </div>
 
             <!-- Bottom Navigation -->
-            <nav class="bottom-nav">
-                <div class="nav-item active">🏠</div>
-                <div class="nav-item">🗺️</div>
-                <div class="nav-item scan-btn">
-                    <div class="scan-inner">QR</div>
-                </div>
-                <div class="nav-item">🎫</div>
-                <div class="nav-item">⚙️</div>
+            <nav class="bottom-nav" aria-label="Bottom Navigation">
+                <button type="button" class="nav-item active" aria-label="Home">🏠</button>
+                <button type="button" class="nav-item" aria-label="Map">🗺️</button>
+                <button type="button" class="nav-item scan-btn" aria-label="Scan QR Code">
+                    <div class="scan-inner" aria-hidden="true">QR</div>
+                </button>
+                <button type="button" class="nav-item" aria-label="Tickets">🎫</button>
+                <button type="button" class="nav-item" aria-label="Settings">⚙️</button>
             </nav>
 
         </div>
@@ -131,7 +156,7 @@
         <div id="arView" class="ar-fullscreen-view">
             <video id="arCamera" autoplay playsinline></video>
             <div class="ar-hud">
-                <button class="close-ar" onclick="closeAR()">✖ Close AR Mode</button>
+                <button class="close-ar" id="btnCloseAR">✖ Close AR Mode</button>
                 <div class="ar-nav-path">
                     <div class="ar-arrow">⬆️</div>
                     <div class="ar-instruction">Walk straight for 50 feet</div>
@@ -143,6 +168,6 @@
             </div>
         </div>
     </div>
-    <script src="fan-app.js"></script>
+    <script src="fan-app.js" defer></script>
 </body>
 </html>

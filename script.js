@@ -1,4 +1,8 @@
-// Navbar Scrolled State
+"use strict";
+
+/**
+ * Navbar Scrolled State - Updates navbar appearance based on scroll position.
+ */
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 50) {
@@ -47,7 +51,13 @@ document.querySelectorAll('.stats-grid').forEach(grid => {
     observer.observe(grid);
 });
 
-// Number Counter Animation Function
+/**
+ * Animates a numerical counter from a start value to an end value.
+ * @param {HTMLElement} obj - The DOM element containing the number.
+ * @param {number} start - The starting value.
+ * @param {number} end - The ending value (target).
+ * @param {number} duration - The duration of the animation in milliseconds.
+ */
 function animateValue(obj, start, end, duration) {
     let startTimestamp = null;
     const step = (timestamp) => {
@@ -73,6 +83,9 @@ if (canvas) {
     const ctx = canvas.getContext('2d');
     let width, height, particles;
 
+    /**
+     * Initializes the canvas dimensions and creates the particle array.
+     */
     function initCanvas() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
@@ -90,6 +103,9 @@ if (canvas) {
         }
     }
 
+    /**
+     * Animation loop to draw and connect the particles dynamically.
+     */
     function drawParticles() {
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
@@ -143,3 +159,15 @@ if (bentoGrid) {
         }
     };
 }
+
+/**
+ * Event Listeners for UI Interactions
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const scheduleBtn = document.getElementById('scheduleDemoBtn');
+    if (scheduleBtn) {
+        scheduleBtn.addEventListener('click', () => {
+            window.open('demo-event-simulator.html', '_blank', 'noopener,noreferrer');
+        });
+    }
+});

@@ -170,11 +170,12 @@ body {
 }
 
 .heatmap-panel { grid-row: span 2; }
-.canvas-container { position: relative; flex-grow: 1; border-radius: 0.5rem; overflow: hidden; background: #000; }
-canvas { display: block; width: 100%; height: 100%; }
+.canvas-container { position: relative; flex-grow: 1; border-radius: 0.5rem; overflow: hidden; background: #000; min-height: 300px; }
+canvas { display: block; width: 100%; height: 100%; position: absolute; z-index: 10; }
+#gmap_iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 .stadium-overlay {
     position: absolute; inset: 0;
-    background: url('heat_map_1776008735870.png') center/cover;
+    background: url('heat_map_1776008735870.webp') center/cover;
     opacity: 0.2; pointer-events: none; mix-blend-mode: screen;
 }
 

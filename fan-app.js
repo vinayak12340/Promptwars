@@ -1,3 +1,5 @@
+"use strict";
+
 // Listen for alerts dispatched from the Operator Dashboard
 window.addEventListener('storage', (e) => {
     if (e.key === 'nexus_alert') {
@@ -6,6 +8,11 @@ window.addEventListener('storage', (e) => {
     }
 });
 
+/**
+ * Displays a global notification banner in the Fan App.
+ * @param {string} type - The type of notification (e.g., 'emergency', 'concession', 'info').
+ * @param {string} message - The message payload to display.
+ */
 function showNotification(type, message) {
     const banner = document.getElementById('notificationBanner');
     const typeTitle = document.getElementById('notifType');
@@ -47,7 +54,10 @@ function showNotification(type, message) {
     }, 6000);
 }
 
-// Send Fan Actions to Operator Dashboard
+/**
+ * Handles the Fan placing a zero-wait order.
+ * @param {string} item - The name of the item ordered.
+ */
 function placeOrder(item) {
     playSfx('click');
     
@@ -85,6 +95,10 @@ function placeOrder(item) {
     }
 }
 
+/**
+ * Simulates checking estimated wait times for facilities.
+ * @param {string} [itemName] - Optional specific item or facility to check.
+ */
 function checkWaitTimes(itemName) {
     playSfx('click');
     // Dispatch to localStorage so dashboard picks it up
@@ -94,6 +108,9 @@ function checkWaitTimes(itemName) {
     alert(`Searching optimal route for ${itemName || 'nearby facility'}... Estimated Wait: 2-4 mins.`);
 }
 
+/**
+ * Scrolls the view to the zero-wait ordering widget.
+ */
 function showOrdering() {
     playSfx('click');
     document.getElementById('orderingMenu').scrollIntoView({behavior: 'smooth'});
@@ -101,6 +118,10 @@ function showOrdering() {
 
 // Subtle Audio Cues (Using simple beeps generated via Web Audio API to avoid missing file errors)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+/**
+ * Generates spatial audio cues utilizing Web Audio API.
+ * @param {string} type - The type of sound effect to play ('click', 'notification', 'alert').
+ */
 function playSfx(type) {
     if(audioCtx.state === 'suspended') audioCtx.resume();
     
@@ -137,6 +158,9 @@ function playSfx(type) {
 // ============= AR NAVIGATION LOGIC =============
 let arStream = null;
 
+/**
+ * Starts the Augmented Reality (AR) camera stream and HUD.
+ */
 async function launchAR() {
     playSfx('click');
     const arView = document.getElementById('arView');
@@ -163,6 +187,9 @@ async function launchAR() {
     }
 }
 
+/**
+ * Stops and closes the AR mode.
+ */
 function closeAR() {
     playSfx('click');
     const arView = document.getElementById('arView');
@@ -177,3 +204,26 @@ function closeAR() {
         arStream = null;
     }
 }
+
+// ============= EVENT LISTENERS INIT =============
+document.addEventListener('DOMContentLoaded', () => {
+    // AR Buttons
+    const btnLaunchAR = document.getElementById('btnLaunchAR');
+    if (btnLaunchAR) btnLaunchAR.addEventListener('click', launchAR);
+
+    const btnCloseAR = document.getElementById('btnCloseAR');
+    if (btnCloseAR) btnCloseAR.addEventListener('click', closeAR);
+
+    // Quick Action Buttons
+    const btnRestrooms = document.getElementById('btnRestrooms');
+    if (btnRestrooms) btnRestrooms.addEventListener('click', () => checkWaitTimes('Restrooms'));
+
+    const btnMerch = document.getElementById('btnMerch');
+    if (btnMerch) btnMerch.addEventListener('click', () => checkWaitTimes('Merchandise'));
+
+    const btnFood = document.getElementById('btnFood');
+    if (btnFood) btnFood.addEventListener('click', showOrdering);
+
+    const btnUpgrades = document.getElementById('btnUpgrades');
+    if (btnUpgrades) btnUpgrades.addEventListener('click', () => checkWaitTimes('Upgrades'));
+});

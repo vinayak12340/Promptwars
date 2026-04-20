@@ -128,7 +128,7 @@ body {
 .ar-nav-widget { padding: 0; overflow: hidden; position: relative; height: 160px; display: flex; flex-direction: column; justify-content: flex-end; }
 .ar-overlay {
     position: absolute; inset: 0;
-    background: url('ar_nav_1776008718925.png') center/cover;
+    background: url('ar_nav_1776008718925.webp') center/cover;
     opacity: 0.6;
 }
 .ar-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }

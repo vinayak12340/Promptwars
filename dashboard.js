@@ -1,4 +1,9 @@
+"use strict";
+
 // 1. Live Clock
+/**
+ * Updates the live clock in the dashboard header.
+ */
 function updateClock() {
     const now = new Date();
     document.getElementById('clock').innerText = now.toLocaleTimeString();
@@ -43,6 +48,9 @@ const liveUsers = Array.from({length: 60}, () => ({
     type: Math.random() > 0.8 ? 'VIP' : 'FAN'
 }));
 
+/**
+ * Main animation loop for the ML Heatmap Canvas simulation.
+ */
 function drawHeatmap() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -201,6 +209,9 @@ setInterval(() => {
 // ============= NEW PREDICTIVE FEATURES =============
 
 // 6. PREDICTIVE CROWD ALERTS
+/**
+ * Initializes all predictive AI alerts and visualizations.
+ */
 function initPredictiveAlerts() {
     updateCrowdPredictions();
     updateRevenueForecasts();
@@ -290,18 +301,39 @@ function updateSystemHealth() {
     `).join('');
 }
 
-function updateWeather() {
+async function updateWeather(lat = 23.0915, lng = 72.5976) {
     const weather = document.getElementById('weatherContent');
     if (!weather) return;
-    weather.innerHTML = `
-        <div class="weather-icon">⛅</div>
-        <div class="weather-temp">82°</div>
-        <div class="weather-details">
-            <span>💧 Humidity: 45%</span>
-            <span>💨 Wind: 12 mph NE</span>
-            <span>UV Index: 6 (High)</span>
-        </div>
-    `;
+    
+    try {
+        // Fetch real-time weather data for provided coordinates
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`);
+        const data = await response.json();
+        
+        // Use native Celsius from Open-Meteo
+        const tempC = Math.round(data.current_weather.temperature); 
+        
+        weather.innerHTML = `
+            <div class="weather-icon">⛅</div>
+            <div class="weather-temp">${tempC}°C</div>
+            <div class="weather-details">
+                <span>📍 Live Location Temp</span>
+                <span>💧 Humidity: 45%</span>
+                <span>💨 Wind: ${data.current_weather.windspeed} km/h</span>
+            </div>
+        `;
+    } catch(err) {
+        // Fallback if fetch fails
+        weather.innerHTML = `
+            <div class="weather-icon">⛅</div>
+            <div class="weather-temp">28°C</div>
+            <div class="weather-details">
+                <span>💧 Humidity: 45%</span>
+                <span>💨 Wind: 12 km/h</span>
+                <span>UV Index: 6 (High)</span>
+            </div>
+        `;
+    }
 }
 
 function updateSentiment() {
@@ -355,8 +387,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ============= DEMO SCENARIO LOGIC =============
+// ============= DEMO SCENARIO LOGIC =============
 let scenarioActive = false;
 
+/**
+ * Triggers a selected venue emergency/scenario simulation.
+ * @param {string} type - The type of scenario ('rain', 'emergency', 'vip', 'reroute')
+ */
 function triggerScenario(type) {
     scenarioActive = true;
     playDashboardSound('alert');
@@ -447,6 +484,9 @@ function generateSpecificAlert(msg, level) {
 }
 
 // ============= COPILOT AI LOGIC =============
+/**
+ * Toggles the Copilot AI widget visibility.
+ */
 function toggleCopilot() {
     const panel = document.getElementById('copilotPanel');
     if (!panel) return;
@@ -544,6 +584,10 @@ try {
     console.warn("Audio context not supported or blocked by browser policy.");
 }
 
+/**
+ * Plays spatial audio for dashboard alerts and clicks.
+ * @param {string} type - The type of sound ('click', 'notification', 'alert')
+ */
 function playDashboardSound(type) {
     if (!audioCtx) return;
     try {
@@ -576,3 +620,64 @@ function playDashboardSound(type) {
         console.warn("Audio playback failed", err);
     }
 }
+
+// ============= DYNAMIC GEOLOCATION LOGIC =============
+/**
+ * Automatically fetches user's local GPS coordinates to update the Maps and live Weather.
+ */
+function initDynamicLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Update Weather to User's live location in Celsius
+                updateWeather(lat, lng);
+                
+                // Update Google Map to user's exact coordinates embedding without watermark
+                const mapIframe = document.getElementById('gmap_iframe');
+                if (mapIframe) {
+                    mapIframe.src = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+                }
+            },
+            (error) => {
+                console.warn("Geolocation denied or unavailable. Defaulting to Stadium.", error);
+                updateWeather(); // Default coordinates
+            }
+        );
+    } else {
+        updateWeather(); // Fallback if unsupported
+    }
+}
+
+// ============= EVENT LISTENERS INIT =============
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Local Weather and Map
+    initDynamicLocation();
+    // Navigation binding
+    const navCrowdControl = document.getElementById('navCrowdControl');
+    if (navCrowdControl) navCrowdControl.addEventListener('click', () => alert('Module securely locked during Demo Configuration.'));
+    
+    const navConcessions = document.getElementById('navConcessions');
+    if (navConcessions) navConcessions.addEventListener('click', () => alert('Loading external Concessions API...'));
+    
+    const navSecurity = document.getElementById('navSecurity');
+    if (navSecurity) navSecurity.addEventListener('click', () => alert('Access Restricted. Security clearance required.'));
+
+    // Scenario bindings
+    const sRain = document.getElementById('scenarioRain');
+    if (sRain) sRain.addEventListener('click', () => triggerScenario('rain'));
+    
+    const sEmergency = document.getElementById('scenarioEmergency');
+    if (sEmergency) sEmergency.addEventListener('click', () => triggerScenario('emergency'));
+    
+    const sVip = document.getElementById('scenarioVip');
+    if (sVip) sVip.addEventListener('click', () => triggerScenario('vip'));
+    
+    const sReroute = document.getElementById('scenarioReroute');
+    if (sReroute) sReroute.addEventListener('click', () => triggerScenario('reroute'));
+    
+    const sReset = document.getElementById('scenarioReset');
+    if (sReset) sReset.addEventListener('click', () => resetScenarios());
+});
